@@ -6,7 +6,9 @@ const getAllUsers = async (req = request, res = response) => {
   const { limit = 5, from = 0 } = req.query;
 
   const users = await User.find().skip(from).limit(limit);
+  const total = await User.countDocuments().skip(from).limit(limit);
   res.json({
+    total,
     users,
   });
 };

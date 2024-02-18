@@ -21,8 +21,8 @@ const router = Router();
 router.get(
   '/',
   [
-    check('limit', 'El limit debe ser un número entero').isNumeric().isInt(),
-    check('from', 'El from debe ser un número entero').isNumeric().isInt(),
+    check('limit', 'El limit debe ser un número entero').optional().isInt(),
+    check('from', 'El from debe ser un número entero').optional().isInt(),
     validateFields,
   ],
   getAllUsers
