@@ -16,7 +16,11 @@ const router = Router();
 
 router.get('/', getUser);
 
-router.put('/:id', putUser);
+router.put(
+  '/:id',
+  [check('id', 'No es un id valido').isMongoId(), validateFields],
+  putUser
+);
 
 router.post(
   '/',
