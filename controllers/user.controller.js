@@ -4,9 +4,17 @@ const bcrypt = require('bcryptjs');
 
 const getAllUsers = async (req = request, res = response) => {
   const { limit = 5, from = 0 } = req.query;
+  const query = { isActive: true };
 
-  const users = await User.find().skip(from).limit(limit);
-  const total = await User.countDocuments().skip(from).limit(limit);
+  // const users = await User.find({ isActive: true }).skip(from).limit(limit);
+  // const total = await User.countDocuments({ isActive: true });
+  // .skip(from)
+  // .limit(limit);
+  const [total, users] = await Promise.all([
+    User.countDocuments(query),
+    User.find(query).skip(from).limit(limit),
+  ]);
+
   res.json({
     total,
     users,
