@@ -10,11 +10,20 @@ const getUser = (req = request, res = response) => {
   });
 };
 
-const putUser = (req, res = response) => {
+const putUser = async (req, res = response) => {
   const { id } = req.params;
+  const { password, google, email, ...rest } = req.body;
+
+  //todo: validar contra db
+  if (password) {
+    const salt = bcrypt.genSaltSync();
+    rest.password = bcrypt.hashSync(password, salt);
+  }
+
+  const user = await User.findByIdAndUpdate(id, rest);
+
   res.json({
-    msg: 'put API-controlador',
-    id,
+    user,
   });
 };
 
