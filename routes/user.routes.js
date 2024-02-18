@@ -9,22 +9,31 @@ const {
 } = require('../helpers/db-validators');
 
 const {
-  getUser,
   putUser,
   postUser,
   deleteUser,
   patchUser,
+  getAllUsers,
 } = require('../controllers/user.controller');
 
 const router = Router();
 
-router.get('/', getUser);
+router.get(
+  '/',
+  [
+    check('limit', 'El limit debe ser un numero').isNumeric(),
+    check('from', 'El from debe ser un numero').isNumeric(),
+    validateFields,
+  ],
+  getAllUsers
+);
 
 router.put(
   '/:id',
   [
     check('id', 'No es un id valido').isMongoId(),
     check('id').custom(existUserById),
+    check('role').custom(isRoleValid),
     validateFields,
   ],
   putUser

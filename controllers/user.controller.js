@@ -2,11 +2,12 @@ const { response } = require('express');
 const User = require('../models/user.model');
 const bcrypt = require('bcryptjs');
 
-const getUser = (req = request, res = response) => {
-  const { name } = req.query;
+const getAllUsers = async (req = request, res = response) => {
+  const { limit = 5, from = 0 } = req.query;
+
+  const users = await User.find().skip(from).limit(limit);
   res.json({
-    msg: 'get API-controlador',
-    name,
+    users,
   });
 };
 
@@ -22,9 +23,7 @@ const putUser = async (req, res = response) => {
 
   const user = await User.findByIdAndUpdate(id, rest);
 
-  res.json({
-    user,
-  });
+  res.json(user);
 };
 
 const postUser = async (req, res = response) => {
@@ -57,7 +56,7 @@ const patchUser = (req, res) => {
 };
 
 module.exports = {
-  getUser,
+  getAllUsers,
   putUser,
   postUser,
   deleteUser,
