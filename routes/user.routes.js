@@ -60,7 +60,15 @@ router.post(
   postUser
 );
 
-router.delete('/', deleteUser);
+router.delete(
+  '/:id',
+  [
+    check('id', 'No es un id valido').isMongoId(),
+    check('id').custom(existUserById),
+    validateFields,
+  ],
+  deleteUser
+);
 
 router.patch('/', patchUser);
 

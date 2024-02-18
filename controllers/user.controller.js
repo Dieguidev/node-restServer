@@ -53,10 +53,16 @@ const postUser = async (req, res = response) => {
   });
 };
 
-const deleteUser = (req, res = response) => {
-  res.json({
-    msg: 'delete API - controlador',
-  });
+const deleteUser = async (req, res = response) => {
+  const { id } = req.params;
+
+  //fisicamewnte borramos de la db
+  // const user = await User.findByIdAndDelete(id);
+
+  //cambiando el estado del usuario
+  const user = await User.findByIdAndUpdate(id, { isActive: false });
+
+  res.json(user);
 };
 
 const patchUser = (req, res) => {
