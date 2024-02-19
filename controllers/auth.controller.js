@@ -46,6 +46,54 @@ const login = async (req = request, res = response) => {
   }
 };
 
+const googleSignIn = async (req = request, res = response) => {
+  const { id_token } = req.body;
+  res.json({
+    msg: 'Google Sign In',
+    id_token,
+  });
+
+  // try {
+  //   const { email, name, img } = await googleVerify(id_token);
+
+  //   let user = await User.findOne({ email });
+
+  //   if (!user) {
+  //     //crear usuario
+  //     const data = {
+  //       name,
+  //       email,
+  //       password: ':P',
+  //       img,
+  //       google: true,
+  //     };
+
+  //     user = new User(data);
+  //     await user.save();
+  //   }
+
+  //   //si el usuario en DB esta en false
+  //   if (!user.isActive) {
+  //     return res.status(401).json({
+  //       msg: 'Hable con el administrador, usuario bloqueado',
+  //     });
+  //   }
+
+  //   //generar el JWT
+  //   const token = await generateJWT(user.id);
+
+  //   res.json({
+  //     user,
+  //     token,
+  //   });
+  // } catch (error) {
+  //   res.status(400).json({
+  //     msg: 'Token de Google no es válido',
+  //   });
+  // }
+};
+
 module.exports = {
   login,
+  googleSignIn,
 };
