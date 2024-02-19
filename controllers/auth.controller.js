@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/user.model');
 
 const { generateJWT } = require('../helpers/generateJWT');
+const { googleVerify } = require('../helpers/google-verify');
 
 const login = async (req = request, res = response) => {
   const { email, password } = req.body;
@@ -48,49 +49,47 @@ const login = async (req = request, res = response) => {
 
 const googleSignIn = async (req = request, res = response) => {
   const { id_token } = req.body;
-  res.json({
-    msg: 'Google Sign In',
-    id_token,
-  });
 
-  // try {
-  //   const { email, name, img } = await googleVerify(id_token);
+  try {
+    const { name, img, email } = await googleVerify(id_token);
+    //verificar si el email existe en la db
+    let user = await User.findOne({ email });
+    if (!user) {
+      //si usuario no existe crearlo
+      const data = {
+        name,
+        email,
+        password: ':P123456',
+        img,
+        google: true,
+      };
 
-  //   let user = await User.findOne({ email });
+      user = new User(data);
 
-  //   if (!user) {
-  //     //crear usuario
-  //     const data = {
-  //       name,
-  //       email,
-  //       password: ':P',
-  //       img,
-  //       google: true,
-  //     };
+      await user.save();
+    }
 
-  //     user = new User(data);
-  //     await user.save();
-  //   }
+    //si el usuario en db esta en false
+    if (!user.isActive) {
+      return res.status(401).json({
+        msg: 'Hable con el administrador, usuario bloqueado',
+      });
+    }
 
-  //   //si el usuario en DB esta en false
-  //   if (!user.isActive) {
-  //     return res.status(401).json({
-  //       msg: 'Hable con el administrador, usuario bloqueado',
-  //     });
-  //   }
+    //Generar el JWT
+    const token = await generateJWT(user.id);
 
-  //   //generar el JWT
-  //   const token = await generateJWT(user.id);
-
-  //   res.json({
-  //     user,
-  //     token,
-  //   });
-  // } catch (error) {
-  //   res.status(400).json({
-  //     msg: 'Token de Google no es válido',
-  //   });
-  // }
+    res.json({
+      user,
+      token,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      ok: false,
+      msg: 'El token de google no se pudo verificar',
+    });
+  }
 };
 
 module.exports = {
