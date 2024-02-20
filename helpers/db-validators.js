@@ -1,5 +1,4 @@
-const Role = require('../models/role.model');
-const User = require('../models/user.model');
+const { Role, Categorie, User } = require('../models');
 
 const isRoleValid = async (role = '') => {
   const existRol = await Role.findOne({ role });
@@ -21,8 +20,16 @@ const existUserById = async (id = '') => {
   }
 };
 
+const existCategoryById = async (id = '') => {
+  const existCategory = await Categorie.findById(id);
+  if (!existCategory) {
+    throw new Error(`La categoria con id ${id} no existe`);
+  }
+};
+
 module.exports = {
   isRoleValid,
   existsEmail,
   existUserById,
+  existCategoryById,
 };
