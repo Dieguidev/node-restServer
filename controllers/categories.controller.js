@@ -8,7 +8,7 @@ const getAllCategories = async (req = request, res = response) => {
 
   const [total, categories] = await Promise.all([
     Categorie.countDocuments(query),
-    Categorie.find(query).skip(from).limit(limit),
+    Categorie.find(query).populate('user').skip(from).limit(limit),
   ]);
 
   res.json({
@@ -19,7 +19,7 @@ const getAllCategories = async (req = request, res = response) => {
 
 const getCategoryById = async (req = request, res = response) => {
   const { id } = req.params;
-  const category = await Categorie.findById(id);
+  const category = await Categorie.findById(id).populate('user');
 
   res.json(category);
 };
@@ -72,4 +72,8 @@ const deleteCategory = async (req = request, res = response) => {
 
 module.exports = {
   createCategory,
+  getCategoryById,
+  getAllCategories,
+  updateCategory,
+  deleteCategory,
 };

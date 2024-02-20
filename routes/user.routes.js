@@ -48,15 +48,9 @@ router.post(
       min: 6,
     }),
     check('email', 'El email no es valido').isEmail(),
-    // check('role', 'El rol no es valido').isIn(['ADMIN_ROLE', 'USER_ROLE']),
     check('role').custom(isRoleValid),
     check('email').custom(existsEmail),
     validateFields,
-    // validarCampos,
-    // validarCorreoExiste,
-    // validarRol,
-    // validarJWT,
-    // validarAdminRole,
   ],
   postUser
 );
