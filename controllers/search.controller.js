@@ -32,6 +32,52 @@ const searchUsers = async (term = '', res = response) => {
   });
 };
 
+const searchCategories = async (term = '', res = response) => {
+  const isMongoID = ObjectId.isValid(term);
+  if (isMongoID) {
+    const category = await Categorie.findById(term);
+    return res.json({
+      results: category ? [category] : [],
+    });
+  }
+
+  const regex = new RegExp(term, 'i'); //i para que sea insensible a mayusculas y minusculas
+
+  const query = { name: regex, isActive: true };
+
+  const [total, categories] = await Promise.all([
+    Categorie.countDocuments(query),
+    Categorie.find(query),
+  ]);
+
+  res.json({
+    results: { total, categories },
+  });
+};
+
+const searchProducts = async (term = '', res = response) => {
+  const isMongoID = ObjectId.isValid(term);
+  if (isMongoID) {
+    const product = await Product.findById(term).populate('category', 'name');
+    return res.json({
+      results: product ? [product] : [],
+    });
+  }
+
+  const regex = new RegExp(term, 'i'); //i para que sea insensible a mayusculas y minusculas
+
+  const query = { name: regex, isActive: true };
+
+  const [total, products] = await Promise.all([
+    Product.countDocuments(query),
+    Product.find(query).populate('category', 'name'),
+  ]);
+
+  res.json({
+    results: { total, products },
+  });
+};
+
 const search = (req = request, res = response) => {
   const { collection, term } = req.params;
 
@@ -46,8 +92,10 @@ const search = (req = request, res = response) => {
       searchUsers(term, res);
       break;
     case 'categories':
+      searchCategories(term, res);
       break;
     case 'products':
+      searchProducts(term, res);
       break;
     default:
       return res.status(500).json({
